@@ -12,24 +12,6 @@ let items =
     "category": "Vegetarian",
     "ingredients": ["tomato sauce", "mozzarella", "basil"],
     "available": true
-  },
-  {
-    "id": 2,
-    "name": "Pepperoni Pizza",
-    "description": "Spicy pepperoni with mozzarella cheese and rich tomato sauce",
-    "price": 15.99,
-    "category": "Non-Vegetarian",
-    "ingredients": ["tomato sauce", "mozzarella", "pepperoni"],
-    "available": true
-  },
-  {
-    "id": 3,
-    "name": "Farmhouse Pizza",
-    "description": "Loaded with fresh vegetables and mozzarella cheese",
-    "price": 14.49,
-    "category": "Vegetarian",
-    "ingredients": ["tomato sauce", "mozzarella", "capsicum", "onion", "tomato"],
-    "available": true
   }
 ];
 
