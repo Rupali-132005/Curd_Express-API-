@@ -1,96 +1,117 @@
 const express = require("express");
-const router = express.Router();
+const routes = express.Router();
 
 // In-memory pizza items
-let items = [
+let items = 
+  [
   {
-    id: 1,
-    name: "Margherita",
-    description: "Classic pizza with tomato sauce, mozzarella, and basil",
-    price: 12.99,
-    category: "Vegetarian",
-    ingredients: ["tomato sauce", "mozzarella", "basil"],
-    available: true
+    "id": 1,
+    "name": "Margherita",
+    "description": "Classic pizza with tomato sauce, mozzarella, and basil",
+    "price": 12.99,
+    "category": "Vegetarian",
+    "ingredients": ["tomato sauce", "mozzarella", "basil"],
+    "available": true
+  },
+  {
+    "id": 2,
+    "name": "Pepperoni Pizza",
+    "description": "Spicy pepperoni with mozzarella cheese and rich tomato sauce",
+    "price": 15.99,
+    "category": "Non-Vegetarian",
+    "ingredients": ["tomato sauce", "mozzarella", "pepperoni"],
+    "available": true
+  },
+  {
+    "id": 3,
+    "name": "Farmhouse Pizza",
+    "description": "Loaded with fresh vegetables and mozzarella cheese",
+    "price": 14.49,
+    "category": "Vegetarian",
+    "ingredients": ["tomato sauce", "mozzarella", "capsicum", "onion", "tomato"],
+    "available": true
   }
 ];
 
 // ---------------- CREATE ITEM ----------------
 // POST /items
-router.post("/", (req, res) => {
-  const { name, description, price, category, ingredients, available } = req.body;
-
-  if (!name || !description || !price || !category || !ingredients) {
-    return res.status(400).json({ message: "All required fields must be provided" });
-  }
-
-  const newItem = {
-    id: items.length ? items[items.length - 1].id + 1 : 1,
-    name,
-    description,
-    price,
-    category,
-    ingredients,
-    available: available ?? true
-  };
-
-  items.push(newItem);
-  res.status(201).json(newItem);
+routes.post("/", (req, res) => {
+    items.push({
+       "id" :req.query.id,
+       "name": req.query.name,
+       "description": req.query.description,
+       "price": req.query.price,
+       "category": req.query.category,
+       "ingredients": req.query.ingredients,
+       "available": req.query.available,
+    });
+    res.send(`item with title ${req.query.id} added successfully`);
 });
 
 // ---------------- GET ALL ITEMS ----------------
 // GET /items
-router.get("/", (req, res) => {
-  res.json(items);
+routes.get("/", (req, res) => {
+  res.send(items);
 });
 
 // ---------------- GET ITEM BY ID ----------------
 // GET /items/:id
-router.get("/:id", (req, res) => {
+routes.get("/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const item = items.find(i => i.id === id);
 
   if (!item) {
-    return res.status(404).json({ message: "Item not found" });
+    return res.send({ message: "Item not found" });
   }
 
-  res.json(item);
+  res.send(item);
 });
 
 // ---------------- UPDATE ITEM ----------------
 // PUT /items/:id
-router.put("/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = items.findIndex(i => i.id === id);
+routes.put('/:id', (req, res) => {
+    const id = parseInt(req.params.id);   // ✅ convert to number
 
-  if (index === -1) {
-    return res.status(404).json({ message: "Item not found" });
-  }
+    let filtered_items = items.filter(i => i.id === id);
 
-  items[index] = {
-    ...items[index],
-    ...req.body,
-    id
-  };
+    if (filtered_items.length > 0) {
 
-  res.json(items[index]);
+        let filtered_item = filtered_items[0];
+
+        // ✅ use body instead of query
+        let name = req.query.name;
+        let description = req.query.description;
+        let price = req.query.price;
+        let category = req.query.category;
+        let ingredients = req.query.ingredients;
+        let available = req.query.available;
+
+        // update only if provided
+    
+        if (name) filtered_item.name = name;
+        if (description) filtered_item.description = description;
+        if (price) filtered_item.price = price;
+        if (category) filtered_item.category = category;
+        if (ingredients) filtered_item.ingredients = ingredients;
+        if (available !== undefined) filtered_item.available = available;
+
+        // remove old + push updated
+        items = items.filter(item => item.id !== id);
+        items.push(filtered_item);
+        res.send(`User with the email  ${id} updated.`);
+        }
+        else{
+            res.send(`User with the email  ${id} not found.`);
+        }
 });
 
 // ---------------- DELETE ITEM ----------------
 // DELETE /items/:id
-router.delete("/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = items.findIndex(i => i.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ message: "Item not found" });
-  }
-
-  const deletedItem = items.splice(index, 1)[0];
-
-  res.json({
-    message: "Item deleted successfully",
-    deletedItem
-  });
+routes.delete('/:id',(req,res)=>{
+    const name = req.params.id;
+    items = items.filter(i => i.id !== id);
+    res.send(`items with id ${id} deleted successfully`);
 });
 
-module.exports = router;
+module.exports = routes;
+
